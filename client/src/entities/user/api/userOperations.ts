@@ -35,7 +35,7 @@ export const CREATE_USER = gql`
     $email: String!
     $role: String!
     $status: String!
-    $birthdate: String!
+    $birthdate: Date!
   ) {
     createUser(
       name: $name

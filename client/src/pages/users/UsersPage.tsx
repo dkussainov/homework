@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useQuery } from "@apollo/client";
 import { GET_USERS } from "../../entities/user/api/userOperations";
 import { useUserStore } from "../../entities/user/store";
+import { User } from "../../entities/user/types";
 
 import { AgGridReact } from "ag-grid-react";
 import {
@@ -14,7 +15,8 @@ import {
   themeBalham,
 } from "ag-grid-community";
 
-import { User } from "../../entities/user/types";
+import { Card } from "antd";
+import AddUserModal from "../../features/user-form/user/addUserModal";
 
 const UsersPage: React.FC = () => {
   const {
@@ -29,7 +31,7 @@ const UsersPage: React.FC = () => {
     if (getUsersData) {
       setUsers(getUsersData.getUsers);
     }
-  }, [getUsersData, setUsers]);
+  }, [getUsersData, setUsers, users]);
 
   if (getUsersLoading) return <p>Loading...</p>;
   if (getUsersError) return <p>Error: {getUsersError.message}</p>;
@@ -51,7 +53,7 @@ const UsersPage: React.FC = () => {
     {
       headerName: "Actions",
       field: "id",
-      cellRenderer: (params) => {
+      cellRenderer: (params: { data: User }) => {
         const user = params.data as User;
         return (
           <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -64,26 +66,29 @@ const UsersPage: React.FC = () => {
   ];
 
   return (
-    <div style={{ height: "400px", width: "100%" }}>
-      <h1>Users</h1>
-      <AgGridReact
-        theme={themeBalham}
-        columnDefs={columnDefs as any} // Casting to any to resolve the type mismatch
-        rowData={users} // Zustand state passed as rowData
-        pagination={true} // Enable pagination
-        paginationPageSize={10} // Set pagination page size
-        paginationPageSizeSelector={[10, 20, 50, 100]} // Add 10 to the selector options
-        domLayout="autoHeight" // Auto height for rows
-        modules={[
-          ClientSideRowModelModule,
-          PaginationModule,
-          TextFilterModule,
-          NumberFilterModule,
-          DateFilterModule,
-          ValidationModule,
-        ]}
-      />
-    </div>
+    <>
+      <Card title="Users" extra={<AddUserModal />}>
+        <div className="ag-theme-alpine" style={{ height: 500 }}>
+          <AgGridReact
+            theme={themeBalham}
+            columnDefs={columnDefs as any}
+            rowData={users} // Zustand state passed as rowData
+            pagination={true}
+            paginationPageSize={10}
+            paginationPageSizeSelector={[10, 20, 50, 100]}
+            domLayout="autoHeight"
+            modules={[
+              ClientSideRowModelModule,
+              PaginationModule,
+              TextFilterModule,
+              NumberFilterModule,
+              DateFilterModule,
+              ValidationModule,
+            ]}
+          />
+        </div>
+      </Card>
+    </>
   );
 };
 
