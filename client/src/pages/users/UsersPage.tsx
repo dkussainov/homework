@@ -48,14 +48,37 @@ const UsersPage: React.FC = () => {
   if (getUsersError) return <p>Error: {getUsersError.message}</p>;
 
   const columnDefs = [
-    { headerName: "ID", field: "id", sortable: false, filter: false },
-    { headerName: "Name", field: "name", sortable: true, filter: false },
-    { headerName: "Email", field: "email", sortable: false, filter: true },
+    {
+      headerName: "ID",
+      field: "id",
+      sortable: false,
+      filter: false,
+      minWidth: 10,
+      maxWidth: 30,
+    },
+    {
+      headerName: "Name",
+      field: "name",
+      sortable: true,
+      filter: false,
+      minWidth: 100,
+      maxWidth: 300,
+    },
+    {
+      headerName: "Email",
+      field: "email",
+      sortable: false,
+      filter: true,
+      minWidth: 100,
+      maxWidth: 300,
+    },
     {
       headerName: "Role",
       field: "role",
       sortable: true,
       filter: true,
+      minWidth: 100,
+      maxWidth: 300,
       cellRenderer: (params: any) => {
         const role = params.value;
         let icon;
@@ -78,6 +101,8 @@ const UsersPage: React.FC = () => {
       field: "status",
       sortable: true,
       filter: true,
+      minWidth: 50,
+      maxWidth: 300,
       cellRenderer: (params: any) => {
         const status = params.value;
         let color = "";
@@ -96,6 +121,8 @@ const UsersPage: React.FC = () => {
       field: "birthdate",
       sortable: true,
       filter: true,
+      minWidth: 100,
+      flex: 1,
       valueFormatter: (params: any) =>
         dayjs(params.value).format("DD.MM.YYYY, HH:mm"),
       cellRenderer: (params: any) => {
@@ -110,6 +137,8 @@ const UsersPage: React.FC = () => {
     {
       headerName: "Actions",
       field: "id",
+      minWidth: 100,
+      maxWidth: 300,
       cellRenderer: (params: { data: User }) => {
         const user = params.data as User;
         return (
@@ -125,7 +154,15 @@ const UsersPage: React.FC = () => {
   return (
     <>
       <Card title="Users" extra={<AddUserModal />}>
-        <div className="ag-theme-alpine" style={{ height: 500 }}>
+        <div
+          className="ag-theme-alpine"
+          style={{
+            flex: 1, // Ensures the grid container grows to take available space
+            width: "100%", // Takes full width of the parent container
+            minHeight: "400px", // Ensures the grid has a minimum height
+            overflow: "hidden", // Prevents content overflow
+          }}
+        >
           <AgGridReact
             key={users.length}
             theme={themeBalham}
@@ -134,7 +171,7 @@ const UsersPage: React.FC = () => {
             pagination={true}
             paginationPageSize={10}
             paginationPageSizeSelector={[10, 20, 50, 100]}
-            domLayout="autoHeight"
+            domLayout="autoHeight" // Automatically adjusts grid height based on content
             modules={[
               ClientSideRowModelModule,
               PaginationModule,
@@ -143,6 +180,10 @@ const UsersPage: React.FC = () => {
               DateFilterModule,
               ValidationModule,
             ]}
+            // Auto resize columns to fit container width
+            gridOptions={{
+              suppressColumnVirtualisation: true, // Disable column virtualization for responsiveness
+            }}
           />
         </div>
       </Card>
