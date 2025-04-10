@@ -96,7 +96,7 @@ const AddUserModal: React.FC = () => {
         open={open}
         onCancel={handleCancel}
         confirmLoading={confirmLoading}
-        footer={null} // We will customize the footer
+        footer={null} 
         centered
         width={600}
       >
