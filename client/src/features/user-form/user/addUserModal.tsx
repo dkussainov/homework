@@ -20,6 +20,7 @@ const AddUserModal: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [addUserMutation] = useMutation(CREATE_USER);
+  const [form] = Form.useForm();
 
   // Zustand store to update the list of users
   const { addUser } = useUserStore();
@@ -58,8 +59,6 @@ const AddUserModal: React.FC = () => {
         variables: userData,
       });
 
-      console.log(data);
-
       // Update Zustand store with the newly added user
       if (data) {
         addUser(data.createUser);
@@ -69,7 +68,7 @@ const AddUserModal: React.FC = () => {
           message: "User Added Successfully!",
           description: `User ${data.createUser.name} has been added.`,
         });
-
+        form.resetFields();
         // Close the modal
         setOpen(false);
       }
@@ -96,14 +95,19 @@ const AddUserModal: React.FC = () => {
         open={open}
         onCancel={handleCancel}
         confirmLoading={confirmLoading}
-        footer={null} 
+        footer={null}
         centered
         width={600}
       >
         <Form
+          form={form}
           layout="vertical"
           onFinish={handleOk}
-          initialValues={{ role: roles[1], status: statuses[0], dob: null }} // Default role, status, and dob (null initially)
+          initialValues={{
+            role: roles[1],
+            status: statuses[0],
+            birthdate: null,
+          }} // Default role, status, and dob (null initially)
         >
           <Form.Item
             label="Name"

@@ -15,10 +15,11 @@ import {
   themeBalham,
 } from "ag-grid-community";
 
-import { Card, Button } from "antd";
+import { Card, Button, Tag, Tooltip } from "antd";
 import AddUserModal from "../../features/user-form/user/addUserModal";
-import EditUserModal from "../../features/user-form/user/editUserModal"; // Import the EditUserModal
+import EditUserModal from "../../features/user-form/user/editUserModal";
 import DeleteUserButton from "../../features/user-form/user/deleteUserModal";
+import dayjs from "dayjs";
 
 const UsersPage: React.FC = () => {
   const {
@@ -29,39 +30,82 @@ const UsersPage: React.FC = () => {
 
   const { users, setUsers } = useUserStore();
 
-  console.log(users);
-
   useEffect(() => {
     if (getUsersData) {
       setUsers(getUsersData.getUsers);
     }
-    console.log(users);
   }, [getUsersData, setUsers]);
 
-  const [editModalVisible, setEditModalVisible] = useState(false); // State for controlling modal visibility
-  const [selectedUser, setSelectedUser] = useState<User | null>(null); // State for storing the selected user
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const handleEditClick = (user: User) => {
     setSelectedUser(user);
-    setEditModalVisible(true); // Open modal on edit button click
+    setEditModalVisible(true);
   };
 
   if (getUsersLoading) return <p>Loading...</p>;
   if (getUsersError) return <p>Error: {getUsersError.message}</p>;
 
   const columnDefs = [
-    { headerName: "ID", field: "id", sortable: true, filter: true },
-    { headerName: "Name", field: "name", sortable: true, filter: true },
-    { headerName: "Email", field: "email", sortable: true, filter: true },
-    { headerName: "Role", field: "role", sortable: true, filter: true },
-    { headerName: "Status", field: "status", sortable: true, filter: true },
+    { headerName: "ID", field: "id", sortable: false, filter: false },
+    { headerName: "Name", field: "name", sortable: true, filter: false },
+    { headerName: "Email", field: "email", sortable: false, filter: true },
+    {
+      headerName: "Role",
+      field: "role",
+      sortable: true,
+      filter: true,
+      cellRenderer: (params: any) => {
+        const role = params.value;
+        let icon;
+        if (role === "admin") {
+          icon = "👑";
+        } else if (role === "user") {
+          icon = "👤";
+        } else if (role === "moderator") {
+          icon = "🛡️";
+        }
+        return (
+          <div>
+            {icon} {role}
+          </div>
+        );
+      },
+    },
+    {
+      headerName: "Status",
+      field: "status",
+      sortable: true,
+      filter: true,
+      cellRenderer: (params: any) => {
+        const status = params.value;
+        let color = "";
+        if (status === "active") {
+          color = "green";
+        } else if (status === "banned") {
+          color = "red";
+        } else if (status === "pending") {
+          color = "yellow";
+        }
+        return <Tag color={color}>{status}</Tag>;
+      },
+    },
     {
       headerName: "Date of Birth",
       field: "birthdate",
       sortable: true,
       filter: true,
       valueFormatter: (params: any) =>
-        new Date(params.value).toLocaleDateString(),
+        dayjs(params.value).format("DD.MM.YYYY, HH:mm"),
+      cellRenderer: (params: any) => {
+        const isoDate = dayjs(params.value).toISOString();
+        return (
+          <Tooltip title={isoDate} mouseEnterDelay={0.5}>
+            <span>{dayjs(params.value).format("DD.MM.YYYY, HH:mm")}</span>
+          </Tooltip>
+        );
+      },
     },
     {
       headerName: "Actions",
@@ -70,8 +114,7 @@ const UsersPage: React.FC = () => {
         const user = params.data as User;
         return (
           <div style={{ display: "flex", gap: "0.5rem" }}>
-            <Button onClick={() => handleEditClick(user)}>Edit</Button>{" "}
-            {/* Open modal on edit click */}
+            <Button onClick={() => handleEditClick(user)}>Edit</Button>
             <DeleteUserButton userId={user.id} />
           </div>
         );
@@ -87,7 +130,7 @@ const UsersPage: React.FC = () => {
             key={users.length}
             theme={themeBalham}
             columnDefs={columnDefs as any}
-            rowData={users} // Zustand state passed as rowData
+            rowData={users}
             pagination={true}
             paginationPageSize={10}
             paginationPageSizeSelector={[10, 20, 50, 100]}
@@ -107,9 +150,9 @@ const UsersPage: React.FC = () => {
       {/* Edit User Modal */}
       {selectedUser && (
         <EditUserModal
-          open={editModalVisible} // Use 'open' instead of 'visible'
-          onCancel={() => setEditModalVisible(false)} // Close modal when canceled
-          user={selectedUser} // Pass the selected user to edit
+          open={editModalVisible}
+          onCancel={() => setEditModalVisible(false)}
+          user={selectedUser}
         />
       )}
     </>
