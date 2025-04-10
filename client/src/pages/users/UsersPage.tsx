@@ -16,9 +16,11 @@ import {
 } from "ag-grid-community";
 
 import { Card, Button, Tag, Tooltip } from "antd";
+import { EditTwoTone } from "@ant-design/icons";
 import AddUserModal from "../../features/user-form/user/addUserModal";
 import EditUserModal from "../../features/user-form/user/editUserModal";
 import DeleteUserButton from "../../features/user-form/user/deleteUserModal";
+import Loading from "../../shared/ui/loading";
 import dayjs from "dayjs";
 
 const UsersPage: React.FC = () => {
@@ -44,7 +46,7 @@ const UsersPage: React.FC = () => {
     setEditModalVisible(true);
   };
 
-  if (getUsersLoading) return <p>Loading...</p>;
+  if (getUsersLoading) return <Loading />;
   if (getUsersError) return <p>Error: {getUsersError.message}</p>;
 
   const columnDefs = [
@@ -143,7 +145,12 @@ const UsersPage: React.FC = () => {
         const user = params.data as User;
         return (
           <div style={{ display: "flex", gap: "0.5rem" }}>
-            <Button onClick={() => handleEditClick(user)}>Edit</Button>
+            <Button
+              onClick={() => handleEditClick(user)}
+              icon={<EditTwoTone />}
+              shape="circle"
+              size="small"
+            />
             <DeleteUserButton userId={user.id} />
           </div>
         );

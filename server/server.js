@@ -2,7 +2,6 @@ import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { GraphQLScalarType, Kind } from "graphql";
 
-// Sample user data
 const users = [
   {
     id: "1",

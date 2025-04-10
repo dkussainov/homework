@@ -4,6 +4,8 @@ import { useMutation } from "@apollo/client";
 import { DELETE_USER } from "../../../entities/user/api/userOperations";
 import { useUserStore } from "../../../entities/user/store";
 
+import { DeleteOutlined } from "@ant-design/icons";
+
 const DeleteUserButton: React.FC<{ userId: string }> = ({ userId }) => {
   const [deleteUserMutation] = useMutation(DELETE_USER);
   const { removeUser } = useUserStore();
@@ -32,7 +34,8 @@ const DeleteUserButton: React.FC<{ userId: string }> = ({ userId }) => {
         } catch (error) {
           notification.error({
             message: "Error Deleting User",
-            description: "There was an error while deleting the user. Please try again.",
+            description:
+              "There was an error while deleting the user. Please try again.",
           });
         }
       },
@@ -40,8 +43,14 @@ const DeleteUserButton: React.FC<{ userId: string }> = ({ userId }) => {
   };
 
   return (
-    <Button type="primary" danger onClick={confirmDelete}>
-      Delete
+    <Button
+      type="primary"
+      danger
+      onClick={confirmDelete}
+      shape="circle"
+      size="small"
+    >
+      <DeleteOutlined />
     </Button>
   );
 };
