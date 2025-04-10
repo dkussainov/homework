@@ -10,8 +10,8 @@ import {
   Spin,
 } from "antd";
 import { useMutation } from "@apollo/client";
-import { CREATE_USER } from "../../../entities/user/api/userOperations"; // Path to your mutation
-import { useUserStore } from "../../../entities/user/store"; // Path to your Zustand store
+import { CREATE_USER } from "../../../entities/user/api/userOperations";
+import { useUserStore } from "../../../entities/user/store";
 
 const roles = ["admin", "user", "moderator"];
 const statuses = ["active", "banned", "pending"];
@@ -50,7 +50,6 @@ const AddUserModal: React.FC = () => {
       birthdate: values.birthdate
         ? values.birthdate.format("YYYY-MM-DD")
         : null,
-      // Convert to ISO string
     };
 
     try {
@@ -59,14 +58,16 @@ const AddUserModal: React.FC = () => {
         variables: userData,
       });
 
+      console.log(data);
+
       // Update Zustand store with the newly added user
       if (data) {
-        addUser(data.addUser);
+        addUser(data.createUser);
 
         // Success notification
         notification.success({
           message: "User Added Successfully!",
-          description: `User ${values.name} has been added.`,
+          description: `User ${data.createUser.name} has been added.`,
         });
 
         // Close the modal

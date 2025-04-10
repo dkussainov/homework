@@ -27,11 +27,14 @@ const UsersPage: React.FC = () => {
 
   const { users, setUsers } = useUserStore();
 
+  console.log(users);
+
   useEffect(() => {
     if (getUsersData) {
       setUsers(getUsersData.getUsers);
     }
-  }, [getUsersData, setUsers, users]);
+    console.log(users);
+  }, [getUsersData, setUsers]);
 
   if (getUsersLoading) return <p>Loading...</p>;
   if (getUsersError) return <p>Error: {getUsersError.message}</p>;
@@ -67,9 +70,11 @@ const UsersPage: React.FC = () => {
 
   return (
     <>
+      {" "}
       <Card title="Users" extra={<AddUserModal />}>
         <div className="ag-theme-alpine" style={{ height: 500 }}>
           <AgGridReact
+            key={users.length}
             theme={themeBalham}
             columnDefs={columnDefs as any}
             rowData={users} // Zustand state passed as rowData

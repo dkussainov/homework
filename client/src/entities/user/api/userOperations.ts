@@ -62,7 +62,7 @@ export const UPDATE_USER = gql`
     $email: String!
     $role: String!
     $status: String!
-    $birthdate: String!
+    $birthdate: Date!
   ) {
     updateUser(
       id: $id
