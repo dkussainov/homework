@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@apollo/client";
 import { GET_USERS } from "../../entities/user/api/userOperations";
 import { useUserStore } from "../../entities/user/store";
@@ -15,8 +15,10 @@ import {
   themeBalham,
 } from "ag-grid-community";
 
-import { Card } from "antd";
+import { Card, Button } from "antd";
 import AddUserModal from "../../features/user-form/user/addUserModal";
+import EditUserModal from "../../features/user-form/user/editUserModal"; // Import the EditUserModal
+import DeleteUserButton from "../../features/user-form/user/deleteUserModal";
 
 const UsersPage: React.FC = () => {
   const {
@@ -35,6 +37,14 @@ const UsersPage: React.FC = () => {
     }
     console.log(users);
   }, [getUsersData, setUsers]);
+
+  const [editModalVisible, setEditModalVisible] = useState(false); // State for controlling modal visibility
+  const [selectedUser, setSelectedUser] = useState<User | null>(null); // State for storing the selected user
+
+  const handleEditClick = (user: User) => {
+    setSelectedUser(user);
+    setEditModalVisible(true); // Open modal on edit button click
+  };
 
   if (getUsersLoading) return <p>Loading...</p>;
   if (getUsersError) return <p>Error: {getUsersError.message}</p>;
@@ -60,8 +70,9 @@ const UsersPage: React.FC = () => {
         const user = params.data as User;
         return (
           <div style={{ display: "flex", gap: "0.5rem" }}>
-            <button onClick={() => console.log(user)}>Edit</button>
-            <button onClick={() => console.log(user.id)}>Delete</button>
+            <Button onClick={() => handleEditClick(user)}>Edit</Button>{" "}
+            {/* Open modal on edit click */}
+            <DeleteUserButton userId={user.id} />
           </div>
         );
       },
@@ -70,7 +81,6 @@ const UsersPage: React.FC = () => {
 
   return (
     <>
-      {" "}
       <Card title="Users" extra={<AddUserModal />}>
         <div className="ag-theme-alpine" style={{ height: 500 }}>
           <AgGridReact
@@ -93,6 +103,15 @@ const UsersPage: React.FC = () => {
           />
         </div>
       </Card>
+
+      {/* Edit User Modal */}
+      {selectedUser && (
+        <EditUserModal
+          open={editModalVisible} // Use 'open' instead of 'visible'
+          onCancel={() => setEditModalVisible(false)} // Close modal when canceled
+          user={selectedUser} // Pass the selected user to edit
+        />
+      )}
     </>
   );
 };

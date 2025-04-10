@@ -72,10 +72,21 @@ const typeDefs = `
       status: String!
       birthdate: Date!
     ): User
+
+    updateUser(
+      id: ID!
+      name: String!
+      email: String!
+      role: String!
+      status: String!
+      birthdate: Date!
+    ): User
+
+    deleteUser(id: ID!): User
   }
 `;
 
-// Resolvers including custom Date scalar
+// Resolvers including custom Date scalar, create, edit, and delete mutations
 const resolvers = {
   Date: new GraphQLScalarType({
     name: "Date",
@@ -112,6 +123,34 @@ const resolvers = {
       };
       users.push(newUser);
       return newUser;
+    },
+    updateUser: (parent, args) => {
+      const { id, name, email, role, status, birthdate } = args;
+      const userIndex = users.findIndex((user) => user.id === id);
+      if (userIndex === -1) {
+        throw new Error("User not found");
+      }
+
+      // Update the user data
+      const updatedUser = {
+        ...users[userIndex],
+        name,
+        email,
+        role,
+        status,
+        birthdate: new Date(birthdate),
+      };
+
+      users[userIndex] = updatedUser;
+      return updatedUser;
+    },
+    deleteUser: (parent, args) => {
+      const userIndex = users.findIndex((user) => user.id === args.id);
+      if (userIndex === -1) {
+        throw new Error("User not found");
+      }
+      const deletedUser = users.splice(userIndex, 1);
+      return deletedUser[0];
     },
   },
 };
