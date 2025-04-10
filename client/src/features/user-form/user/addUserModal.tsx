@@ -12,6 +12,7 @@ import {
 import { useMutation } from "@apollo/client";
 import { CREATE_USER } from "../../../entities/user/api/userOperations";
 import { useUserStore } from "../../../entities/user/store";
+import { UserAddOutlined } from "@ant-design/icons";
 
 const roles = ["admin", "user", "moderator"];
 const statuses = ["active", "banned", "pending"];
@@ -86,8 +87,8 @@ const AddUserModal: React.FC = () => {
 
   return (
     <>
-      <Button type="primary" onClick={showModal}>
-        Add User
+      <Button type="primary" onClick={showModal} shape="circle">
+        <UserAddOutlined style={{ color: "#FFFFFF" }} />
       </Button>
 
       <Modal
