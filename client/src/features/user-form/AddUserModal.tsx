@@ -1,4 +1,9 @@
 import React, { useState } from "react";
+
+import { useMutation } from "@apollo/client";
+import { CREATE_USER } from "../../entities/user/api/userOperations";
+import { useUserStore } from "../../entities/user/store";
+
 import {
   Button,
   Modal,
@@ -9,9 +14,6 @@ import {
   notification,
   Spin,
 } from "antd";
-import { useMutation } from "@apollo/client";
-import { CREATE_USER } from "../../entities/user/api/userOperations";
-import { useUserStore } from "../../entities/user/store";
 import { UserAddOutlined } from "@ant-design/icons";
 
 const roles = ["admin", "user", "moderator"];
@@ -33,7 +35,7 @@ const AddUserModal: React.FC = () => {
     setOpen(false);
   };
 
-  const handleOk = async (values: {
+  const handleSubmit = async (values: {
     name: string;
     email: string;
     role: string;
@@ -96,7 +98,7 @@ const AddUserModal: React.FC = () => {
         <Form
           form={form}
           layout="vertical"
-          onFinish={handleOk}
+          onFinish={handleSubmit}
           initialValues={{
             role: roles[1],
             status: statuses[0],

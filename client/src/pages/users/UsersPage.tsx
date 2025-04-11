@@ -1,10 +1,17 @@
 import { useState, useEffect } from "react";
+
 import { useQuery, useMutation } from "@apollo/client";
 import { GET_USERS, UPDATE_USER } from "../../entities/user/api/userOperations";
 import { useUserStore } from "../../entities/user/store";
 import { User } from "../../entities/user/types";
 
+import AddUserModal from "../../features/user-form/AddUserModal";
+import EditUserModal from "../../features/user-form/EditUserModal";
+import DeleteUserButton from "../../features/user-delete/DeleteUserModal";
+import Loading from "../../shared/ui/Loading";
+
 import { AgGridReact } from "ag-grid-react";
+import { lightTheme, darkTheme } from "../../shared/config/agGridTheme";
 import {
   ClientSideRowModelModule,
   PaginationModule,
@@ -16,15 +23,10 @@ import {
 } from "ag-grid-community";
 
 import { Card, Button, Tag, Tooltip, notification } from "antd";
-import { EditTwoTone } from "@ant-design/icons";
-import AddUserModal from "../../features/user-form/AddUserModal";
-import EditUserModal from "../../features/user-form/EditUserModal";
-import DeleteUserButton from "../../features/user-delete/DeleteUserModal";
-import Loading from "../../shared/ui/Loading";
+import { EditOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import { myTheme } from "../../shared/config/agGridTheme";
 
-const UsersPage: React.FC = () => {
+const UsersPage: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
   const {
     data: getUsersData,
     loading: getUsersLoading,
@@ -83,8 +85,8 @@ const UsersPage: React.FC = () => {
       field: "id",
       sortable: false,
       filter: false,
-      minWidth: 10,
-      maxWidth: 30,
+      minWidth: 48,
+      maxWidth: 48,
     },
     {
       headerName: "Name",
@@ -99,16 +101,14 @@ const UsersPage: React.FC = () => {
       field: "email",
       sortable: false,
       filter: true,
-      minWidth: 100,
-      maxWidth: 300,
+      flex: 1,
     },
     {
       headerName: "Role",
       field: "role",
       sortable: true,
       filter: true,
-      minWidth: 100,
-      maxWidth: 300,
+      flex: 1,
       editable: true,
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
@@ -138,24 +138,42 @@ const UsersPage: React.FC = () => {
         );
       },
     },
+
     {
       headerName: "Status",
       field: "status",
       sortable: true,
       filter: true,
-      minWidth: 50,
-      maxWidth: 300,
+      flex: 1,
       cellRenderer: (params: any) => {
         const status = params.value;
         let color = "";
+        let bgColor = "";
+
         if (status === "active") {
-          color = "green";
+          color = "#fff";
+          bgColor = "#52c41a";
         } else if (status === "banned") {
-          color = "red";
+          color = "#fff";
+          bgColor = "#f5222d";
         } else if (status === "pending") {
-          color = "yellow";
+          color = "#fff";
+          bgColor = "#faad14";
         }
-        return <Tag color={color}>{status}</Tag>;
+
+        return (
+          <Tag
+            color={bgColor}
+            style={{
+              backgroundColor: bgColor,
+              color: color,
+              borderRadius: "4px",
+              border: "none",
+            }}
+          >
+            {status}
+          </Tag>
+        );
       },
     },
     {
@@ -163,7 +181,6 @@ const UsersPage: React.FC = () => {
       field: "birthdate",
       sortable: true,
       filter: true,
-      minWidth: 100,
       flex: 1,
 
       cellRenderer: (params: any) => {
@@ -185,12 +202,16 @@ const UsersPage: React.FC = () => {
         return (
           <div style={{ display: "flex", gap: "0.5rem" }}>
             <Button
-              type="dashed"
+              type="default"
               onClick={() => handleEditClick(user)}
-              icon={<EditTwoTone />}
+              icon={<EditOutlined />}
               shape="circle"
               size="small"
-              style={{ color: "#1DA57A" }}
+              style={{
+                marginTop: "0.5rem",
+                backgroundColor: "",
+                borderColor: "#f0f5ff",
+              }}
             />
             <DeleteUserButton userId={user.id} />
           </div>
@@ -212,7 +233,7 @@ const UsersPage: React.FC = () => {
           }}
         >
           <AgGridReact
-            theme={myTheme}
+            theme={isDarkMode ? darkTheme : lightTheme}
             columnDefs={columnDefs as any}
             rowData={users}
             pagination={true}
@@ -231,8 +252,6 @@ const UsersPage: React.FC = () => {
             gridOptions={{
               suppressColumnVirtualisation: true,
             }}
-            getRowId={(params) => params.data.id}
-            singleClickEdit={true}
           />
         </div>
       </Card>

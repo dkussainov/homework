@@ -1,4 +1,8 @@
 import { useState, useEffect } from "react";
+import { useMutation } from "@apollo/client";
+import { UPDATE_USER } from "../../entities/user/api/userOperations";
+import { User } from "../../entities/user/types";
+
 import {
   Modal,
   Form,
@@ -9,9 +13,6 @@ import {
   Spin,
   DatePicker,
 } from "antd";
-import { useMutation } from "@apollo/client";
-import { UPDATE_USER } from "../../entities/user/api/userOperations";
-import { User } from "../../entities/user/types";
 import dayjs from "dayjs";
 
 interface EditUserModalProps {
