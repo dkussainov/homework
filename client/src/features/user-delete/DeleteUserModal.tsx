@@ -1,8 +1,8 @@
 import React from "react";
 import { Button, Modal, notification } from "antd";
 import { useMutation } from "@apollo/client";
-import { DELETE_USER } from "../../../entities/user/api/userOperations";
-import { useUserStore } from "../../../entities/user/store";
+import { DELETE_USER } from "../../entities/user/api/userOperations";
+import { useUserStore } from "../../entities/user/store";
 
 import { DeleteOutlined } from "@ant-design/icons";
 

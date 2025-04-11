@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@apollo/client";
-import { GET_USERS } from "../../entities/user/api/userOperations";
+import { useQuery, useMutation } from "@apollo/client";
+import { GET_USERS, UPDATE_USER } from "../../entities/user/api/userOperations";
 import { useUserStore } from "../../entities/user/store";
 import { User } from "../../entities/user/types";
 
@@ -12,24 +12,18 @@ import {
   NumberFilterModule,
   DateFilterModule,
   ValidationModule,
-  themeQuartz,
+  SelectEditorModule,
 } from "ag-grid-community";
 
-import { Card, Button, Tag, Tooltip } from "antd";
+import { Card, Button, Tag, Tooltip, notification } from "antd";
 import { EditTwoTone } from "@ant-design/icons";
-import AddUserModal from "../../features/user-form/user/addUserModal";
-import EditUserModal from "../../features/user-form/user/editUserModal";
-import DeleteUserButton from "../../features/user-form/user/deleteUserModal";
-import Loading from "../../shared/ui/loading";
+import AddUserModal from "../../features/user-form/AddUserModal";
+import EditUserModal from "../../features/user-form/EditUserModal";
+import DeleteUserButton from "../../features/user-delete/DeleteUserModal";
+import Loading from "../../shared/ui/Loading";
 import dayjs from "dayjs";
+import { myTheme } from "../../shared/config/agGridTheme";
 
-const myTheme = themeQuartz.withParams({
-  accentColor: "#1DA57A",
-  backgroundColor: "#F2F1F1",
-  browserColorScheme: "light",
-  foregroundColor: "#36677B",
-  headerFontSize: 14,
-});
 const UsersPage: React.FC = () => {
   const {
     data: getUsersData,
@@ -37,7 +31,9 @@ const UsersPage: React.FC = () => {
     error: getUsersError,
   } = useQuery(GET_USERS);
 
-  const { users, setUsers } = useUserStore();
+  const [updateUserMutation] = useMutation(UPDATE_USER);
+
+  const { users, setUsers, editUser } = useUserStore();
 
   useEffect(() => {
     if (getUsersData) {
@@ -55,6 +51,31 @@ const UsersPage: React.FC = () => {
 
   if (getUsersLoading) return <Loading />;
   if (getUsersError) return <p>Error: {getUsersError.message}</p>;
+
+  const handleUpdateUser = async (user: User) => {
+    try {
+      const { data } = await updateUserMutation({
+        variables: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          status: user.status,
+          birthdate: user.birthdate,
+        },
+      });
+
+      notification.success({
+        message: "User Updated",
+        description: `User ${data.updateUser.name} has been updated successfully!`,
+      });
+    } catch (error) {
+      notification.error({
+        message: "Error",
+        description: "There was an error updating the user. Please try again.",
+      });
+    }
+  };
 
   const columnDefs = [
     {
@@ -88,6 +109,18 @@ const UsersPage: React.FC = () => {
       filter: true,
       minWidth: 100,
       maxWidth: 300,
+      editable: true,
+      cellEditor: "agSelectCellEditor",
+      cellEditorParams: {
+        values: ["👑admin", "👤user", "🛡️moderator"],
+      },
+      valueSetter: (params: any) => {
+        const updatedUser = { ...params.data, role: params.newValue };
+        editUser(updatedUser);
+        console.log(updatedUser);
+        handleUpdateUser(updatedUser);
+      },
+
       cellRenderer: (params: any) => {
         const role = params.value;
         let icon;
@@ -132,8 +165,7 @@ const UsersPage: React.FC = () => {
       filter: true,
       minWidth: 100,
       flex: 1,
-      valueFormatter: (params: any) =>
-        dayjs(params.value).format("DD.MM.YYYY, HH:mm"),
+
       cellRenderer: (params: any) => {
         const isoDate = dayjs(params.value).toISOString();
         return (
@@ -169,25 +201,24 @@ const UsersPage: React.FC = () => {
 
   return (
     <>
-      <Card title="Users" extra={<AddUserModal />}>
+      <Card title="Registered Users" extra={<AddUserModal />}>
         <div
           className="ag-theme-alpine"
           style={{
-            flex: 1, // Ensures the grid container grows to take available space
-            width: "100%", // Takes full width of the parent container
-            minHeight: "400px", // Ensures the grid has a minimum height
-            overflow: "hidden", // Prevents content overflow
+            flex: 1,
+            width: "100%",
+            minHeight: "400px",
+            overflow: "hidden",
           }}
         >
           <AgGridReact
-            key={users.length}
             theme={myTheme}
             columnDefs={columnDefs as any}
             rowData={users}
             pagination={true}
             paginationPageSize={10}
             paginationPageSizeSelector={[10, 20, 50, 100]}
-            domLayout="autoHeight" // Automatically adjusts grid height based on content
+            domLayout="autoHeight"
             modules={[
               ClientSideRowModelModule,
               PaginationModule,
@@ -195,16 +226,17 @@ const UsersPage: React.FC = () => {
               NumberFilterModule,
               DateFilterModule,
               ValidationModule,
+              SelectEditorModule,
             ]}
-            // Auto resize columns to fit container width
             gridOptions={{
-              suppressColumnVirtualisation: true, // Disable column virtualization for responsiveness
+              suppressColumnVirtualisation: true,
             }}
+            getRowId={(params) => params.data.id}
+            singleClickEdit={true}
           />
         </div>
       </Card>
 
-      {/* Edit User Modal */}
       {selectedUser && (
         <EditUserModal
           open={editModalVisible}

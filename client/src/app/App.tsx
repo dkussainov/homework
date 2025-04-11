@@ -33,13 +33,9 @@ const App: React.FC = () => {
     <ConfigProvider
       theme={{
         token: {
-          // Seed Token
           colorPrimary: "#1DA57A",
           borderRadius: 2,
-
           colorText: "#36677B",
-
-          // Alias Token
           colorBgContainer: "#f6ffed",
         },
       }}

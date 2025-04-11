@@ -10,8 +10,8 @@ import {
   DatePicker,
 } from "antd";
 import { useMutation } from "@apollo/client";
-import { UPDATE_USER } from "../../../entities/user/api/userOperations";
-import { User } from "../../../entities/user/types";
+import { UPDATE_USER } from "../../entities/user/api/userOperations";
+import { User } from "../../entities/user/types";
 import dayjs from "dayjs";
 
 interface EditUserModalProps {
@@ -31,10 +31,8 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
 
   useEffect(() => {
     if (user) {
-      // Ensure the birthdate is valid using dayjs
       const validBirthdate = user.birthdate ? dayjs(user.birthdate) : null;
 
-      // Only set if the birthdate is valid
       if (validBirthdate && validBirthdate.isValid()) {
         form.setFieldsValue({
           name: user.name,
@@ -50,10 +48,9 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
   const handleOk = async (values: any) => {
     setConfirmLoading(true);
     try {
-      // Validate and format the birthdate using dayjs
       const formattedBirthdate =
         values.birthdate && values.birthdate.isValid()
-          ? values.birthdate.format("YYYY-MM-DD") // Use dayjs to format the date
+          ? values.birthdate.format("YYYY-MM-DD")
           : null;
 
       const { data } = await updateUserMutation({
@@ -72,7 +69,6 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
         description: `User ${data.updateUser.name} has been updated successfully!`,
       });
 
-      // Close modal after successful update
       onCancel();
     } catch (error) {
       notification.error({
@@ -102,7 +98,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
           email: user?.email,
           role: user?.role,
           status: user?.status,
-          birthdate: user?.birthdate ? dayjs(user.birthdate) : null, // Use dayjs to handle birthdate
+          birthdate: user?.birthdate ? dayjs(user.birthdate) : null,
         }}
       >
         <Form.Item

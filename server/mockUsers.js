@@ -1,0 +1,42 @@
+export const users = [
+  {
+    id: "1",
+    name: "Alice Johnson",
+    email: "alice.johnson@example.com",
+    role: "admin",
+    status: "active",
+    birthdate: new Date("1990-05-14"),
+  },
+  {
+    id: "2",
+    name: "Bob Smith",
+    email: "bob.smith@example.com",
+    role: "user",
+    status: "pending",
+    birthdate: new Date("1985-11-23"),
+  },
+  {
+    id: "3",
+    name: "Carol Martinez",
+    email: "carol.martinez@example.com",
+    role: "moderator",
+    status: "active",
+    birthdate: new Date("1992-07-09"),
+  },
+  {
+    id: "4",
+    name: "David Lee",
+    email: "david.lee@example.com",
+    role: "user",
+    status: "active",
+    birthdate: new Date("1988-03-30"),
+  },
+  {
+    id: "5",
+    name: "Evelyn Wright",
+    email: "evelyn.wright@example.com",
+    role: "admin",
+    status: "banned",
+    birthdate: new Date("1995-12-18"),
+  },
+];

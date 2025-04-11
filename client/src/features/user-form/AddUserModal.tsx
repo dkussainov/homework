@@ -10,8 +10,8 @@ import {
   Spin,
 } from "antd";
 import { useMutation } from "@apollo/client";
-import { CREATE_USER } from "../../../entities/user/api/userOperations";
-import { useUserStore } from "../../../entities/user/store";
+import { CREATE_USER } from "../../entities/user/api/userOperations";
+import { useUserStore } from "../../entities/user/store";
 import { UserAddOutlined } from "@ant-design/icons";
 
 const roles = ["admin", "user", "moderator"];
@@ -23,7 +23,6 @@ const AddUserModal: React.FC = () => {
   const [addUserMutation] = useMutation(CREATE_USER);
   const [form] = Form.useForm();
 
-  // Zustand store to update the list of users
   const { addUser } = useUserStore();
 
   const showModal = () => {
@@ -43,7 +42,6 @@ const AddUserModal: React.FC = () => {
   }) => {
     setConfirmLoading(true);
 
-    // Prepare data for GraphQL mutation
     const userData = {
       name: values.name,
       email: values.email,
@@ -55,33 +53,28 @@ const AddUserModal: React.FC = () => {
     };
 
     try {
-      // Make the GraphQL request to add the user
       const { data } = await addUserMutation({
         variables: userData,
       });
 
-      // Update Zustand store with the newly added user
       if (data) {
         addUser(data.createUser);
 
-        // Success notification
         notification.success({
           message: "User Added Successfully!",
           description: `User ${data.createUser.name} has been added.`,
         });
         form.resetFields();
-        // Close the modal
         setOpen(false);
       }
     } catch (error) {
-      // Handle error
       notification.error({
         message: "Error Adding User",
         description:
           "There was an error while adding the user. Please try again.",
       });
     } finally {
-      setConfirmLoading(false); // Reset loading state
+      setConfirmLoading(false);
     }
   };
 
@@ -108,7 +101,7 @@ const AddUserModal: React.FC = () => {
             role: roles[1],
             status: statuses[0],
             birthdate: null,
-          }} // Default role, status, and dob (null initially)
+          }}
         >
           <Form.Item
             label="Name"
@@ -156,8 +149,6 @@ const AddUserModal: React.FC = () => {
               ))}
             </Select>
           </Form.Item>
-
-          {/* Date of Birth (DOB) field */}
           <Form.Item
             label="Date of Birth"
             name="birthdate"
