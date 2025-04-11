@@ -44,14 +44,13 @@ const DeleteUserButton: React.FC<{ userId: string }> = ({ userId }) => {
 
   return (
     <Button
-      type="primary"
+      variant="outlined"
       danger
       onClick={confirmDelete}
       shape="circle"
       size="small"
-    >
-      <DeleteOutlined />
-    </Button>
+      icon={<DeleteOutlined />}
+    />
   );
 };
 

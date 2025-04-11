@@ -12,7 +12,7 @@ import {
   NumberFilterModule,
   DateFilterModule,
   ValidationModule,
-  themeBalham,
+  themeQuartz,
 } from "ag-grid-community";
 
 import { Card, Button, Tag, Tooltip } from "antd";
@@ -23,6 +23,13 @@ import DeleteUserButton from "../../features/user-form/user/deleteUserModal";
 import Loading from "../../shared/ui/loading";
 import dayjs from "dayjs";
 
+const myTheme = themeQuartz.withParams({
+  accentColor: "#1DA57A",
+  backgroundColor: "#F2F1F1",
+  browserColorScheme: "light",
+  foregroundColor: "#36677B",
+  headerFontSize: 14,
+});
 const UsersPage: React.FC = () => {
   const {
     data: getUsersData,
@@ -146,10 +153,12 @@ const UsersPage: React.FC = () => {
         return (
           <div style={{ display: "flex", gap: "0.5rem" }}>
             <Button
+              type="dashed"
               onClick={() => handleEditClick(user)}
               icon={<EditTwoTone />}
               shape="circle"
               size="small"
+              style={{ color: "#1DA57A" }}
             />
             <DeleteUserButton userId={user.id} />
           </div>
@@ -172,7 +181,7 @@ const UsersPage: React.FC = () => {
         >
           <AgGridReact
             key={users.length}
-            theme={themeBalham}
+            theme={myTheme}
             columnDefs={columnDefs as any}
             rowData={users}
             pagination={true}
