@@ -1,9 +1,8 @@
-import React from "react";
-import { Button, Modal, notification } from "antd";
 import { useMutation } from "@apollo/client";
 import { DELETE_USER } from "../../entities/user/api/userOperations";
 import { useUserStore } from "../../entities/user/store";
 
+import { Button, Modal, notification } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 
 const DeleteUserButton: React.FC<{ userId: string }> = ({ userId }) => {
@@ -44,12 +43,18 @@ const DeleteUserButton: React.FC<{ userId: string }> = ({ userId }) => {
 
   return (
     <Button
-      variant="outlined"
       danger
       onClick={confirmDelete}
       shape="circle"
       size="small"
       icon={<DeleteOutlined />}
+      style={{
+        color: "#1DA57A",
+        backgroundColor: "",
+        borderColor: "#f0f5ff",
+        boxShadow: "none",
+        marginTop: "0.5rem",
+      }}
     />
   );
 };

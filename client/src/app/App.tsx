@@ -1,17 +1,20 @@
+import React, { useState } from "react";
 import { ApolloProvider } from "./providers/ApolloProvider";
 import UsersPage from "../pages/users/UsersPage";
-import "@ant-design/v5-patch-for-react-19";
 
-import React from "react";
+import "@ant-design/v5-patch-for-react-19";
+import { Layout, Menu, theme, ConfigProvider, Switch, Tooltip } from "antd";
 import {
   HomeOutlined,
   SettingOutlined,
   UsergroupAddOutlined,
   FileSearchOutlined,
+  BulbOutlined,
+  BulbFilled,
 } from "@ant-design/icons";
-import { Layout, Menu, theme, ConfigProvider } from "antd";
 
 const { Header, Content, Footer, Sider } = Layout;
+const { defaultAlgorithm, darkAlgorithm } = theme;
 
 const items = [
   { icon: HomeOutlined, label: "HOME" },
@@ -25,63 +28,110 @@ const items = [
 }));
 
 const App: React.FC = () => {
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const handleClick = () => setIsDarkMode((prev) => !prev);
+
+  const lightTokens = {
+    colorPrimary: "#1DA57A",
+    colorText: "#36677B",
+    colorBgContainer: "#f6ffed",
+    colorBgLayout: "#f6ffed",
+    colorBgElevated: "#f6ffed",
+    colorBgBase: "#f6ffed",
+  };
+
+  const darkTokens = {
+    colorPrimary: "#1DA57A",
+    colorText: "#f6ffed",
+    colorTextBase: "#f6ffed",
+    colorBgContainer: "#385B3D",
+    colorBgLayout: "#385B3D",
+    colorBgElevated: "#385B3D",
+    colorBgBase: "#385B3D",
+  };
 
   return (
     <ConfigProvider
       theme={{
-        token: {
-          colorPrimary: "#1DA57A",
-          borderRadius: 2,
-          colorText: "#36677B",
-          colorBgContainer: "#f6ffed",
-        },
+        algorithm: isDarkMode ? darkAlgorithm : defaultAlgorithm,
+        token: isDarkMode ? darkTokens : lightTokens,
       }}
     >
-      <Layout>
-        <Sider
-          style={{ background: "#f6ffed" }}
-          breakpoint="lg"
-          collapsedWidth="0"
-          onBreakpoint={(broken) => {
-            console.log(broken);
-          }}
-          onCollapse={(collapsed, type) => {
-            console.log(collapsed, type);
+      <InnerApp isDarkMode={isDarkMode} handleClick={handleClick} />
+    </ConfigProvider>
+  );
+};
+
+const InnerApp: React.FC<{ isDarkMode: boolean; handleClick: () => void }> = ({
+  isDarkMode,
+  handleClick,
+}) => {
+  const {
+    token: { colorBgBase, colorBgContainer, colorText, borderRadiusLG },
+  } = theme.useToken();
+
+  return (
+    <Layout style={{ minHeight: "100vh", background: colorBgBase }}>
+      <Sider
+        style={{ background: colorBgBase }}
+        breakpoint="lg"
+        collapsedWidth="0"
+      >
+        <div className="demo-logo-vertical" />
+        <Menu
+          theme={isDarkMode ? "dark" : "light"}
+          mode="inline"
+          defaultSelectedKeys={["2"]}
+          items={items}
+          style={{ background: colorBgBase, color: colorText }}
+        />
+      </Sider>
+      <Layout style={{ background: colorBgBase }}>
+        <Header style={{ padding: 0, background: colorBgBase }} />
+        <Tooltip title={`Switch to ${isDarkMode ? "light" : "dark"} mode`}>
+          <div
+            style={{
+              position: "absolute",
+              top: 16,
+              right: 24,
+              zIndex: 1000,
+            }}
+          >
+            <Switch
+              checked={isDarkMode}
+              onChange={handleClick}
+              checkedChildren={<BulbFilled />}
+              unCheckedChildren={<BulbOutlined />}
+              size="small"
+            />
+          </div>
+        </Tooltip>
+        <Content style={{ margin: "0 16px" }}>
+          <div
+            style={{
+              padding: 24,
+              minHeight: 360,
+              background: colorBgContainer,
+              borderRadius: borderRadiusLG,
+              color: colorText,
+            }}
+          >
+            <ApolloProvider>
+              <UsersPage isDarkMode={isDarkMode} />
+            </ApolloProvider>
+          </div>
+        </Content>
+        <Footer
+          style={{
+            textAlign: "center",
+            background: colorBgBase,
+            color: colorText,
           }}
         >
-          <div className="demo-logo-vertical" />
-          <Menu
-            theme="light"
-            mode="inline"
-            defaultSelectedKeys={["2"]}
-            items={items}
-          />
-        </Sider>
-        <Layout>
-          <Header style={{ padding: 0, background: "#fff" }} />
-          <Content style={{ margin: "24px 16px 0" }}>
-            <div
-              style={{
-                padding: 24,
-                minHeight: 360,
-                background: colorBgContainer,
-                borderRadius: borderRadiusLG,
-              }}
-            >
-              <ApolloProvider>
-                <UsersPage />
-              </ApolloProvider>
-            </div>
-          </Content>
-          <Footer style={{ textAlign: "center", background: "#fff" }}>
-            Homework {new Date().getFullYear()}
-          </Footer>
-        </Layout>
+          Homework 2025
+        </Footer>
       </Layout>
-    </ConfigProvider>
+    </Layout>
   );
 };
 
